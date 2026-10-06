@@ -1,810 +1,143 @@
-#  AI-Powered Disaster Prediction & Emergency Management System
+﻿# AI-Powered Disaster Prediction & Emergency Management System
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
-[![Machine Learning](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
-[![AI](https://img.shields.io/badge/AI-OpenRouter-purple.svg)](https://openrouter.ai/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+A full-stack disaster risk platform for predicting flood, earthquake, landslide, cyclone, and drought conditions, with a Python Flask API and a dashboard frontend.
 
-> An advanced AI-driven platform that predicts multiple disaster risks, provides real-time evacuation routing, AI-powered chatbot assistance, and trip anomaly detection to save lives during emergencies.
+## Overview
 
-![Project Banner](https://via.placeholder.com/1200x400/1e3a8a/ffffff?text=AI+Disaster+Prediction+System)
+This project combines:
 
----
+- ML-based risk prediction for multiple disaster types
+- Geographic and weather-informed analysis
+- Dashboard-driven monitoring and alert outputs
+- API endpoints for location and disaster assessments
+- Integration with a FloodGuard frontend for a visual monitoring experience
 
+The repository currently runs through a root startup script that launches:
 
-##  Table of Contents
+- the Flask backend at http://localhost:5000
+- the FloodGuard dashboard at a dynamic local port such as http://localhost:3000/
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Real-World Impact](#-real-world-impact)
-- [Technology Stack](#-technology-stack)
-- [System Architecture](#-system-architecture)
-- [Machine Learning Models](#-machine-learning-models)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Usage](#-usage)
-- [API Documentation](#-api-documentation)
-- [Project Structure](#-project-structure)
-- [Contributing](#-contributing)
-- [Future Enhancements](#-future-enhancements)
-- [License](#-license)
+The root app redirects users to the dashboard while the API remains available at the backend port.
 
----
+## Features
 
-##  Overview
+- Multi-disaster prediction: flood, earthquake, landslide, cyclone, drought
+- Location-based analysis using city or coordinate inputs
+- API-based disaster predictions with validation
+- Emergency route and shelter lookup support
+- Dashboard UI under the FloodGuard folder
+- Training and inference workflow for ML models
 
-This project is a **comprehensive disaster prediction and emergency management system** that leverages advanced machine learning, real-time weather data integration, and AI-powered recommendations to protect communities from natural disasters.
+## Quick Start
 
-### What Makes This Special?
+### 1. Clone the repository
 
-- **Multi-Disaster Prediction**: Simultaneously predicts risks for floods, earthquakes, landslides, cyclones, and droughts
-- **Real-Time Integration**: Connects with Indian Meteorological Department (IMD) for official weather warnings
-- **AI-Powered Guidance**: Uses OpenRouter AI (GPT-4, Claude, Mistral) for contextual safety recommendations
-- **Smart Evacuation**: Mapbox-powered routing to nearest emergency shelters
-- **Trip Monitoring**: Real-time anomaly detection during evacuation journeys
-- **Predictive Analytics**: 7-14 day disaster forecasting with AI-generated insights
-
----
-
-##  Key Features
-
-### 1. **Multi-Disaster Risk Prediction**
--  **Flood Detection**: Analyzes rainfall, elevation, river proximity
--  **Earthquake Risk**: Evaluates seismic activity and infrastructure quality
--  **Landslide Warning**: Assesses slope angles, soil types, and rainfall patterns
--  **Cyclone Alerts**: Monitors wind speed, pressure, and temperature conditions
--  **Drought Forecasting**: Tracks rainfall deficiency and temperature trends
-
-### 2. **Real-Time IMD Integration**
-- Official weather warnings from Indian Meteorological Department
-- District-wise hazard alerts
-- AI-powered translation and summarization of technical bulletins
-- Color-coded alert levels (Green, Yellow, Orange, Red)
-
-### 3. **Intelligent AI Chatbot**
-- **Contextual Assistance**: Answers questions about disaster preparedness
-- **Risk Explanation**: Uses AI to explain why predictions were made
-- **What-If Scenarios**: Simulates changes in weather conditions
-- **Multi-Language Support**: Translates warnings to Hindi and regional languages
-- **Natural Language Understanding**: Parses user intent for better responses
-
-### 4. **Smart Evacuation System**
-- **Route Optimization**: Finds nearest emergency shelters using Mapbox
-- **Multiple Routes**: Displays all available evacuation paths
-- **Real-Time Navigation**: Turn-by-turn directions with ETA
-- **Shelter Information**: Capacity, type, and facilities data
-- **Isochrone Analysis**: Shows reachable areas within time limits
-
-### 5. **Trip Anomaly Detection**
-- **Route Deviation Alerts**: Warns when user strays from planned path (>150m)
-- **GPS Quality Filtering**: Kalman filtering for accurate location tracking
-- **Movement Pattern Analysis**: Detects unusual behavior (circular movement, stops)
-- **Emergency Triggers**: Auto-alerts for high-severity anomalies
-- **Trip Statistics**: Distance, speed, duration tracking
-
-### 6. **Predictive Forecasting**
-- 3-14 day disaster risk forecasting
-- Weather-integrated predictions
-- AI-generated safety recommendations
-- Batch analysis for multiple cities
-- Optimal travel timing suggestions
-
----
-
-##  Real-World Impact
-
-### Lives Saved
-- **Early Warning**: Up to 72 hours advance notice for disasters
-- **Evacuation Planning**: Reduces evacuation time by 40%
-- **Resource Optimization**: Helps authorities deploy aid proactively
-
-### Use Cases
-
-#### 1. **Emergency Management Authorities**
-- Monitor multiple cities simultaneously
-- Prioritize resource allocation based on AI predictions
-- Coordinate evacuation operations with real-time data
-
-#### 2. **Individual Citizens**
-- Get personalized safety recommendations
-- Plan safe travel routes during disaster warnings
-- Access AI chatbot for 24/7 emergency guidance
-
-#### 3. **Tourism Industry**
-- Assess destination safety for travelers
-- Provide crowd density predictions
-- Offer alternative safe destinations
-
-#### 4. **Urban Planners**
-- Identify high-risk zones for infrastructure development
-- Plan emergency shelter locations
-- Design flood-resistant drainage systems
-
-### Success Metrics
-- ✅ **Accuracy**: 85%+ prediction accuracy across disaster types
-- ✅ **Speed**: Real-time predictions in <2 seconds
-- ✅ **Coverage**: Supports 100+ Indian cities
-- ✅ **Scalability**: Can Handles concurrent users
-
----
-
-##  Technology Stack
-
-### Backend
-- **Python 3.8+**: Core programming language
-- **Flask 2.0+**: Web framework for REST API
-- **Scikit-Learn**: Machine learning model training
-- **Pandas & NumPy**: Data processing and analysis
-- **GeoPy**: Geographic calculations for route analysis
-
-### Machine Learning
-- **Random Forest Classifier**: Multi-disaster prediction models
-- **Feature Engineering**: 15+ numerical + 4 categorical features
-- **Ensemble Learning**: Combines multiple models for accuracy
-- **Synthetic Data Generation**: AI-powered training data augmentation
-
-### AI & LLM Integration
-- **OpenRouter API**: Access to GPT-4, Claude 3.5, DeepSeek, Mistral
-- **Natural Language Processing**: Intent parsing and entity extraction
-- **Contextual AI**: Provides disaster-specific recommendations
-- **Multi-Model Strategy**: Uses different models for different tasks
-
-### Mapping & Routing
-- **Mapbox GL JS**: Interactive map visualization
-- **Mapbox Directions API**: Evacuation route calculation
-- **Mapbox Isochrone API**: Reachable area analysis
-- **GeoJSON**: Geographic data format
-
-### Data Sources
-- **WeatherAPI**: Real-time weather data
-- **Indian Meteorological Department (IMD)**: Official warnings
-- **Mapbox Terrain RGB**: Elevation data
-- **Custom Shelter Database**: Emergency shelter locations
-
-### Frontend
-- **HTML5/CSS3**: Modern responsive design
-- **Vanilla JavaScript**: No framework dependencies
-- **Mapbox GL JS**: 3D map rendering
-- **Turf.js**: Geospatial analysis
-
-### DevOps
-- **python-dotenv**: Environment variable management
-- **Git**: Version control
-- **Virtual Environment**: Dependency isolation
-
----
-
-##  System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    USER INTERFACE (Web)                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │  Risk Map   │  │  AI Chat    │  │  Trip Monitoring    │ │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘ │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    FLASK REST API                            │
-│  ┌─────────────────────────────────────────────────────────┐│
-│  │  /api/analyze  │  /api/chat  │  /api/start-trip         ││
-│  │  /api/forecast │  /api/evacuation-route                 ││
-│  └─────────────────────────────────────────────────────────┘│
-└────────────────────────┬────────────────────────────────────┘
-                         │
-        ┌────────────────┼────────────────┐
-        ▼                ▼                ▼
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   ML Models  │  │  AI Engine   │  │  Map APIs    │
-│              │  │              │  │              │
-│ • Flood      │  │ • OpenRouter │  │ • Mapbox     │
-│ • Earthquake │  │ • GPT-4      │  │ • Directions │
-│ • Landslide  │  │ • Claude     │  │ • Isochrone  │
-│ • Cyclone    │  │ • Mistral    │  │ • Terrain    │
-│ • Drought    │  │              │  │              │
-└──────────────┘  └──────────────┘  └──────────────┘
-        │                │                │
-        └────────────────┼────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    EXTERNAL DATA SOURCES                     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
-│  │  Weather API │  │  IMD APIs    │  │  Anomaly         │  │
-│  │  (Real-time) │  │  (Warnings)  │  │  Detector        │  │
-│  └──────────────┘  └──────────────┘  └──────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-##  Machine Learning Models
-
-### Training Process
-
-#### 1. **Data Generation**
-```python
-# Synthetic data generation with AI assistance
-def generate_synthetic_data_with_ai(disaster_type, n_samples=50):
-    """Uses Claude 3.5 to generate realistic disaster scenarios"""
-    # AI generates contextually accurate weather/geographic patterns
-    # Examples: Mumbai monsoon floods, Delhi seismic activity
-```
-
-**Features Used** (19 total):
-- **Numerical (15)**: Temperature, Humidity, Pressure, Wind Speed, Rainfall, Elevation, Distance to River, Population Density, Water Level, River Discharge, Historical Events, Latitude, Longitude, Seismic Activity, Slope Angle
-- **Categorical (4)**: Infrastructure Quality, Land Cover, Soil Type, Season
-
-#### 2. **Model Architecture**
-```python
-Pipeline([
-    ('preprocessor', ColumnTransformer([
-        ('num', StandardScaler(), numerical_features),
-        ('cat', OneHotEncoder(), categorical_features)
-    ])),
-    ('classifier', RandomForestClassifier(
-        n_estimators=100,
-        max_depth=10,
-        min_samples_split=5
-    ))
-])
-```
-
-#### 3. **Training Statistics**
-| Disaster Type | Training Samples | Test Accuracy | Precision | Recall |
-|---------------|------------------|---------------|-----------|--------|
-| Flood         | 2000            | 87.3%         | 85.1%     | 89.2%  |
-| Earthquake    | 2000            | 83.7%         | 81.4%     | 86.5%  |
-| Landslide     | 2000            | 85.9%         | 84.2%     | 87.8%  |
-| Cyclone       | 2000            | 88.1%         | 86.7%     | 90.1%  |
-| Drought       | 2000            | 82.4%         | 80.8%     | 84.3%  |
-
-#### 4. **Risk Classification**
-- **High Risk**: Probability ≥ 70%
-- **Medium Risk**: 30% ≤ Probability < 70%
-- **Low Risk**: Probability < 30%
-
-### Model Files
-```
-flood_model.pkl         (RandomForest, 2.3 MB)
-earthquake_model.pkl    (RandomForest, 2.1 MB)
-landslide_model.pkl     (RandomForest, 2.2 MB)
-cyclone_model.pkl       (RandomForest, 2.4 MB)
-drought_model.pkl       (RandomForest, 2.0 MB)
-```
-
----
-
-##  Installation
-
-### Prerequisites
-- Python 3.8 or higher
-- pip package manager
-- Git
-- Virtual environment (recommended)
-
-### Step-by-Step Setup
-
-#### 1. Clone the Repository
 ```bash
 git clone https://github.com/karansingh7773-rathore/Pre-Disaster-Predictor-Trained-on-ML-algorithms-Powered-by-AI
-
-cd disaster-predictor-ai
+cd Pre-Disaster-Predictor-Trained-on-ML-algorithms-Powered-by-AI
 ```
 
-#### 2. Create Virtual Environment
+### 2. Create and activate a virtual environment
+
 ```bash
-# Windows
 python -m venv venv
 venv\Scripts\activate
-
-# Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
 ```
 
-#### 3. Install Dependencies
+### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 4. Setup Environment Variables
-```bash
-# Copy the example file
-copy .env.example .env  # Windows
-cp .env.example .env    # Linux/Mac
+### 4. Start the application
 
-# Edit .env with your API keys
-notepad .env  # Windows
-nano .env     # Linux/Mac
-```
+From the project root, run:
 
-#### 5. Train ML Models (First Time Only)
-```bash
-python server.py
-# Select option 6 to train all models
-# This will create .pkl model files
-```
-
-#### 6. Run the Application
-```bash
-# Windows PowerShell: starts Flask and the FloodGuard dashboard
+```powershell
 .\start-dashboard.ps1
 ```
 
-#### 7. Access the Web Interface
-After the frontend is ready, open the existing app URL. It redirects to the FloodGuard dashboard:
-```
-http://localhost:5000
-```
+This script:
 
----
+- installs frontend dependencies in the FloodGuard folder if needed
+- starts the Flask backend
+- starts the dashboard frontend
+- prints the local URLs to use
 
-##  Configuration
+### 5. Open the app
 
-### Environment Variables
+- Backend API: http://localhost:5000
+- Dashboard: http://localhost:3000/ (port may shift if 3000 is already occupied)
 
-Create a `.env` file in the root directory:
+## Manual startup
+
+If you want to run the backend and frontend separately:
+
+### Backend
 
 ```bash
-# Mapbox Access Token
-# Get it from: https://www.mapbox.com/
-MAPBOX_ACCESS_TOKEN=pk.your-token-here
+python app.py
+```
 
-# Weather API Key
-# Get it from: https://www.weatherapi.com/
-WEATHER_API_KEY=your-key-here
+### Frontend
 
-# Flask Configuration
-FLASK_SECRET_KEY=generate-a-random-secret-key
+```bash
+cd FloodGuard
+npm install
+npm run dev -- --hostname 127.0.0.1 --port 3000
+```
+
+## Environment variables
+
+Create a `.env` file in the project root if you want to configure external API support:
+
+```bash
+FLASK_SECRET_KEY=your-secret-key
+MAPBOX_ACCESS_TOKEN=your-mapbox-token
+WEATHER_API_KEY=your-weather-api-key
 FLASK_DEBUG=True
 FLASK_PORT=5000
 ```
 
-### API Keys Required
+These values are optional for local dashboard startup but are required for some weather, mapping, and routing features.
 
-1. **Mapbox** (Free tier: 50,000 requests/month)
-   - Sign up: https://www.mapbox.com/
-   - Go to Account → Tokens
-   - Create new token with all scopes enabled
+## Project structure
 
-2. **WeatherAPI** (Free tier: 1M calls/month)
-   - Sign up: https://www.weatherapi.com/
-   - Copy API key from dashboard
-
-### Security Best Practices
-
- **Never commit `.env` file to Git!**
-
-```bash
-# Already in .gitignore
-.env
-*.pkl
-__pycache__/
+```text
+.
+├── app.py                     # Flask entry point and API routes
+├── server.py                  # Predictor logic and data fetchers
+├── anomaly_detector.py        # Anomaly monitoring logic
+├── mapbox_integration.py      # Shelters and route utilities
+├── requirements.txt           # Python dependencies
+├── start-dashboard.ps1        # Main app launcher
+├── FloodGuard/                # Dashboard frontend and supporting app code
+├── static/                   # Static assets
+├── README.md                 # Project documentation
+├── .gitignore                # Ignored files
+└── ...
 ```
 
----
+## Key API endpoints
 
-##  Usage
+The app includes these main routes:
 
-### 1. City Risk Analysis
+- `GET /` — redirects to the dashboard
+- `GET /api/analyze?city=...` — analyze a city for disasters
+- `GET /api/analyze-location?lat=...&lon=...` — analyze coordinates
+- `GET /api/analyze-coords?lat=...&lon=...` — coordinate-based disaster data
+- `GET /api/evacuation-route?lat=...&lon=...` — nearest shelter route
+- `POST /api/predict-disaster` — custom disaster prediction with structured inputs
+- `GET /api/isochrone?lat=...&lon=...` — isochrone polygon data
 
-#### Via Web Interface:
-1. Enter city name (e.g., "Mumbai", "Delhi", "Chennai")
-2. Click **"Analyze Risk"**
-3. View predictions on map with color-coded markers
-4. Check AI-generated safety recommendations
+## Notes
 
-#### Via API:
-```python
-import requests
+- The provided startup script is the recommended way to run the full project.
+- If the frontend port is already busy, the script automatically picks the next available local port.
+- Some advanced features depend on external services such as Mapbox or weather APIs.
+- Model files and generated artifacts may be created during training or runtime and should remain ignored when appropriate.
 
-response = requests.get('http://localhost:5000/api/analyze?city=Mumbai')
-data = response.json()
+## License
 
-print(data['predictions'])
-# Output:
-# {
-#   'flood': {'risk': True, 'probability': 0.85, 'risk_level': 'High'},
-#   'earthquake': {'risk': False, 'probability': 0.23, 'risk_level': 'Low'},
-#   ...
-# }
-```
-
-### 2. AI Chat Assistant
-
-#### Example Conversations:
-```
-User: "What should I pack for a flood evacuation?"
-AI: "Essential flood evacuation kit:
-     • Waterproof bags for documents
-     • 3 days of drinking water
-     • Non-perishable food
-     • First aid kit
-     • Flashlight and batteries
-     • Emergency contacts list"
-
-User: "Explain why Mumbai has high flood risk today?"
-AI: "Mumbai's current high flood risk is due to:
-     1. Heavy monsoon rainfall (150mm recorded)
-     2. Low elevation coastal areas
-     3. High tide timing coinciding with peak rain
-     4. IMD has issued Red Alert for the region"
-```
-
-### 3. Evacuation Routing
-
-```javascript
-// Show nearest shelter
-showEvacuationRoute()
-
-// Display all available shelters
-showAllEvacuationRoutes()
-
-// Start trip monitoring
-startTripMonitoring()
-```
-
-### 4. Forecast Analysis
-
-```python
-# Get 7-day forecast
-GET /api/forecast?city=Bangalore&days=7
-
-# Response includes:
-# - Daily risk predictions
-# - Weather conditions
-# - AI safety guidance
-```
-
-### 5. Batch City Analysis
-
-```python
-POST /api/batch-analyze
-Content-Type: application/json
-
-{
-  "cities": ["Mumbai", "Delhi", "Chennai", "Kolkata", "Bangalore"]
-}
-
-# Returns comparative risk analysis for all cities
-```
-
----
-
-##  API Documentation
-
-### Base URL
-```
-http://localhost:5000/api
-```
-
-### Endpoints
-
-#### 1. City Analysis
-```http
-GET /analyze?city={city_name}
-
-Response:
-{
-  "location": {"latitude": 19.076, "longitude": 72.877},
-  "predictions": {...},
-  "imd_warnings": [...],
-  "highest_risk": "High",
-  "shelters": [...]
-}
-```
-
-#### 2. Location Analysis
-```http
-GET /analyze-location?lat={latitude}&lon={longitude}
-
-Response:
-{
-  "location": {"latitude": 19.076, "longitude": 72.877},
-  "predictions": {...},
-  "highest_risk": "Medium"
-}
-```
-
-#### 3. Evacuation Route
-```http
-GET /evacuation-route?lat={latitude}&lon={longitude}
-
-Response:
-{
-  "route": {
-    "geometry": {...},
-    "distance": 5234,
-    "duration": 1245
-  },
-  "shelter": {
-    "name": "Central Emergency Shelter",
-    "type": "Primary",
-    "capacity": "2000 people"
-  }
-}
-```
-
-#### 4. AI Chat
-```http
-POST /chat
-Content-Type: application/json
-
-{
-  "question": "How to prepare for earthquake?",
-  "context": {
-    "city": "Delhi",
-    "predictions": {...}
-  }
-}
-
-Response:
-{
-  "answer": "AI-generated response...",
-  "timestamp": 1234567890
-}
-```
-
-#### 5. Trip Monitoring
-```http
-POST /start-trip
-{
-  "route": [[lon, lat], ...],
-  "session_id": "unique-id"
-}
-
-POST /update-location
-{
-  "lat": 19.076,
-  "lon": 72.877,
-  "session_id": "unique-id"
-}
-
-POST /stop-trip
-{
-  "session_id": "unique-id"
-}
-```
-
-#### 6. Forecast
-```http
-GET /forecast?city={city_name}&days={num_days}
-
-Response:
-{
-  "city": "Mumbai",
-  "forecast": [
-    {
-      "date": "2024-01-15",
-      "weather": {...},
-      "risks": {...}
-    },
-    ...
-  ],
-  "ai_guidance": "AI-generated recommendations..."
-}
-```
-
----
-
-##  Project Structure
-
-```
-disaster-predictor-ai/
-│
-├── app.py                      # Flask application & API routes
-├── server.py                   # Core ML models & AI chatbot
-├── mapbox_integration.py       # Mapbox API wrapper
-├── anomaly_detector.py         # Trip monitoring & anomaly detection
-├── requirements.txt            # Python dependencies
-├── .env                        # Environment variables (not in repo)
-├── .env.example                # Environment template
-├── .gitignore                  # Git ignore rules
-├── README.md                   # This file
-│
-├── static/
-│   └── visualization.html      # Frontend web interface
-│
-├── models/                     # Trained ML models
-│   ├── flood_model.pkl
-│   ├── earthquake_model.pkl
-│   ├── landslide_model.pkl
-│   ├── cyclone_model.pkl
-│   └── drought_model.pkl
-│
-├── data/                       # Training data
-│   ├── flood_training_data.csv
-│   ├── earthquake_training_data.csv
-│   └── ...
-│
-└── docs/                       # Additional documentation
-    ├── API.md
-    ├── DEPLOYMENT.md
-    └── CONTRIBUTING.md
-```
-
----
-
-##  Contributing
-
-We welcome contributions! Here's how you can help:
-
-### Areas for Contribution
-
-1. **Machine Learning**
-   - Improve model accuracy
-   - Add new disaster types (tsunamis, wildfires)
-   - Implement deep learning models
-
-2. **Data Integration**
-   - Add more weather data sources
-   - Integrate satellite imagery
-   - Historical disaster databases
-
-3. **Features**
-   - Mobile app development
-   - SMS alert system
-   - Offline mode support
-
-4. **Internationalization**
-   - Add more languages
-   - Regional disaster types
-   - Local emergency protocols
-
-### How to Contribute
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Code Style
-
-- Follow PEP 8 for Python code
-- Use meaningful variable names
-- Add docstrings to functions
-- Write unit tests for new features
-
----
-
-##  Future Enhancements
-
-### Phase 1: Tourist Safety (In Progress)
-- [ ] GPS quality enhancement with Kalman filtering
-- [ ] Crowd density prediction at tourist spots
-- [ ] Personalized route recommendations
-- [ ] Danger zone proximity alerts
-
-### Phase 2: Advanced Analytics
-- [ ] Deep learning models (LSTM for time series)
-- [ ] Satellite image analysis for disaster detection
-- [ ] Social media sentiment analysis for ground reports
-- [ ] Historical disaster pattern recognition
-
-### Phase 3: Infrastructure
-- [ ] Mobile apps (iOS & Android)
-- [ ] SMS/WhatsApp alert system
-- [ ] Integration with government emergency systems
-- [ ] Offline mode with cached data
-
-### Phase 4: Community Features
-- [ ] User-reported incidents
-- [ ] Community shelter reviews
-- [ ] Volunteer coordination
-- [ ] Resource donation tracking
-
-### Phase 5: Enterprise
-- [ ] Multi-tenant architecture
-- [ ] Custom alerting rules
-- [ ] Dashboard for authorities
-- [ ] API rate limiting & authentication
-
----
-
-##  Performance Metrics
-
-### System Performance
-- **API Response Time**: <500ms average
-- **Map Load Time**: <2 seconds
-- **AI Chat Response**: <3 seconds
-- **Concurrent Users**: Tested up to 100
-- **Database Queries**: Optimized with indexing
-
-### Model Performance
-- **Training Time**: ~5 minutes per model
-- **Prediction Time**: <100ms per request
-- **Memory Usage**: ~50MB per model
-- **Accuracy**: 85% average across disasters
-
----
-
-##  Known Issues
-
-1. **IMD API Limitations**
-   - Some APIs return limited data
-   - Requires fallback mechanisms
-
-2. **Mapbox Free Tier**
-   - 50,000 requests/month limit
-   - Consider caching frequent routes
-
-3. **GPS Accuracy**
-   - Indoor locations may have poor signal
-   - Use WiFi/cell tower triangulation as fallback
-
-4. **AI Response Time**
-   - Can be slow during peak usage
-   - Implement response caching
-
----
-
-##  Documentation
-
-- **API Reference**: [docs/API.md](docs/API.md)
-- **Deployment Guide**: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-- **Model Training**: [docs/TRAINING.md](docs/TRAINING.md)
-- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
-
----
-
-##  Acknowledgments
-
-- **Indian Meteorological Department** for weather data APIs
-- **Mapbox** for mapping and routing services
-- **OpenRouter** for AI model access
-- **Scikit-Learn** community for ML tools
-- **Flask** framework developers
-
----
-
-##  Contact
-
-**Project Maintainer**: Karan Singh Rathore
-- Email: karan.rathore.aiml.engineer@gmail.com
-- LinkedIn: [@Karan Singh Rathore](https://www.linkedin.com/in/karansingh7773/)
-- GitHub: [@Karan Singh Rathore](https://github.com/karansingh7773-rathore)
-
-**Project Link**: [https://github.com/karansingh7773-rathore/Pre-Disaster-Predictor-Trained-on-ML-algorithms-Powered-by-AI](https://github.com/karansingh7773-rathore/Pre-Disaster-Predictor-Trained-on-ML-algorithms-Powered-by-AI)
-
----
-
-##  License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2025 Karan Singh Rathore
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
-
----
-
-##  Star History
-
-If this project helped you, please consider giving it a ⭐️!
-
-[![Star History Chart](https://api.star-history.com/svg?repos=karansingh7773-rathore/disaster-predictor-ai&type=Date)](https://star-history.com/#karansingh7773-rathore/disaster-predictor-ai&Date)
-
----
-
-##  Inspiration
-
-This project was inspired by the need to make disaster preparedness accessible to everyone. By combining cutting-edge AI with real-time data, we aim to save lives and reduce the impact of natural disasters on communities worldwide.
-
-> "Technology should serve humanity, especially in times of crisis." - Project Vision
-
----
-
-**Made with ❤️ for a safer world**
-
-*Last Updated: Octomber 2025*
-#   S a f e s p h e r e  
- 
+This project is intended for educational and prototype use.
