@@ -7,10 +7,13 @@ import json
 import time
 import os
 import math
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from the project root regardless of the current working directory
+PROJECT_ROOT = Path(__file__).resolve().parent
+load_dotenv(PROJECT_ROOT / ".env")
+from telegram_service import send_telegram_alert
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
@@ -173,10 +176,33 @@ def predict_disaster():
     if not predictions or disaster not in predictions:
         return jsonify({'error': 'The prediction model could not assess these inputs.'}), 503
 
+    prediction = predictions[disaster]
+    telegram_alert_sent = False
+    if str(prediction.get('risk_level', '')).upper() == 'HIGH':
+        app.logger.warning('HIGH RISK detected for %s', disaster)
+        probability = prediction.get('probability')
+        confidence = float(probability) * 100 if probability is not None else 0.0
+        alert_message = (
+            '🚨 HIGH-RISK ALERT 🚨\n\n'
+            '⚠️ High-risk condition detected by the AI system.\n\n'
+            f'Prediction: {disaster.capitalize()}\n'
+            'Risk Level: HIGH\n'
+            f'Confidence: {confidence:.1f}%\n'
+            f'Time: {time.strftime("%Y-%m-%d %H:%M:%S %Z")}\n\n'
+            'Recommended Action:\n'
+            'Follow local emergency guidance and move to a safe area.\n\n'
+            'Please check the system immediately.'
+        )
+        telegram_alert_sent = send_telegram_alert(
+            alert_message,
+            condition_key=f'{disaster}:{prediction.get("risk", "high")}',
+        )
+
     return jsonify({
         'disaster': disaster,
-        'prediction': predictions[disaster],
+        'prediction': prediction,
         'inputs': model_inputs,
+        'telegram_alert_sent': telegram_alert_sent,
     })
 
 @app.route('/api/analyze-coords')

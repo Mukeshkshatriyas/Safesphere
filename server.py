@@ -16,12 +16,14 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from typing import Optional, Dict
 import warnings
+from pathlib import Path
 from dotenv import load_dotenv
 
 warnings.filterwarnings('ignore')
 
-# Load environment variables at the top
-load_dotenv()
+# Load environment variables from the project root regardless of the current working directory
+PROJECT_ROOT = Path(__file__).resolve().parent
+load_dotenv(PROJECT_ROOT / ".env")
 
 # AI Integration
 try:
@@ -153,7 +155,7 @@ class IMDDataFetcher:
             """
             
             completion = ai_client.chat.completions.create(
-                model="z-ai/glm-4.5-air:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"},
             )
@@ -181,15 +183,7 @@ class DisasterChatbot:
                     base_url="https://openrouter.ai/api/v1",
                     api_key=self.api_key
                 )
-                # Test API connection with fast model
-                response = self.client.chat.completions.create(
-                    model="nvidia/nemotron-nano-9b-v2:free",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant specialized in disaster preparedness and risk assessment."},
-                        {"role": "user", "content": "test"}
-                    ]
-                )
-                print("✅ Advanced Disaster Preparedness AI Chatbot initialized successfully")
+                print("✅ Advanced Disaster Preparedness AI Chatbot client configured")
             except Exception as e:
                 print(f"Could not initialize chatbot: {e}")
                 self.client = None
@@ -264,8 +258,7 @@ class DisasterChatbot:
         """
         try:
             completion = self.client.chat.completions.create(
-                # Use a fast and free model for real-time interaction
-                model="z-ai/glm-4.5-air:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.1,
                 max_tokens=200,
@@ -284,22 +277,32 @@ class DisasterChatbot:
         
         try:
             # Build context from conversation history and current situation
-            system_prompt = """You are a disaster risk analysis expert and emergency advisor specialized in Indian cities, providing advice about disaster preparedness and safety.
+            system_prompt = """You are the SafeSphere Project Assistant for this disaster prediction and emergency-management project. Explain the project in plain language when asked, and also answer disaster preparedness and safety questions.
+
+            Project facts:
+            - The FloodGuard dashboard is built with Next.js and React; the Flask backend provides prediction, chat, weather, mapping, and alert services.
+            - The system covers flood, earthquake, landslide, cyclone, and drought risks, with separate dashboard pages and prediction models.
+            - Weather and location inputs can be combined with model estimates, and Mapbox supports map and route features when configured.
+            - Telegram notifications can be sent for high-risk predictions when bot settings are configured.
+            - Predictions are estimates for decision support, not official warnings. Users should follow local emergency services and official alerts.
+
+            Do not claim that a live API, map, alert, or model is working unless that status is provided in the conversation context. If asked about implementation details not listed here, be transparent and suggest checking the project README or source code.
 
             Key Responsibilities:
-            1. If user asks about specific city risks:
+            1. If user asks about the project, describe its purpose, capabilities, and main components in clear non-technical language. Explain technical terms when needed.
+            2. If user asks about specific city risks:
                - Explain geographical and historical factors that contribute to risk
                - Reference local terrain, weather patterns, and seismic activity
                - Provide location-specific safety recommendations
                - Use historical disaster events as examples when relevant
             
-            2. For disaster preparation questions:
+            3. For disaster preparation questions:
                - Give clear, actionable safety guidance
                - Adapt recommendations to local conditions
                - Explain why each measure is important
                - Consider available infrastructure and resources
             
-            3. For current risk assessments:
+            4. For current risk assessments:
                - Analyze environmental and weather conditions
                - Explain risk levels and contributing factors
                - Provide immediate safety measures if needed
@@ -333,7 +336,7 @@ class DisasterChatbot:
             
             # Create chat completion with model context and conversation history
             completion = self.client.chat.completions.create(
-                model="nvidia/nemotron-nano-9b-v2:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=messages,
                 temperature=0.7,
                 max_tokens=500,
@@ -391,7 +394,7 @@ class DisasterChatbot:
             """
             
             completion = self.client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3.1:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[{"role": "user", "content": context}],
                 max_tokens=400,
                 temperature=0.5
@@ -405,6 +408,15 @@ class DisasterChatbot:
     def _get_fallback_chat_response(self, question, city=None):
         """Provide basic responses when AI is unavailable"""
         question_lower = question.lower()
+
+        if any(topic in question_lower for topic in ['project', 'safesphere', 'floodguard', 'how does this work', 'what can you do', 'features', 'architecture']):
+            return (
+                "SafeSphere is a disaster-risk dashboard for flood, earthquake, landslide, cyclone, and drought. "
+                "Its FloodGuard web interface collects inputs and displays risk estimates; a Flask backend runs "
+                "the prediction and support services. Weather and Mapbox features depend on configured API keys, "
+                "and high-risk predictions can trigger Telegram alerts when configured. These estimates support "
+                "planning but do not replace official warnings or emergency guidance."
+            )
         
         # Detect disaster type
         disaster_type = None
@@ -554,7 +566,7 @@ class AIGuidanceSystem:
             if isinstance(prediction_data, str):
                 # This is a what-if explanation prompt
                 completion = self.client.chat.completions.create(
-                    model="nvidia/nemotron-nano-9b-v2:free",
+                    model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                     messages=[{"role": "user", "content": prediction_data}],
                     max_tokens=self.max_tokens,
                     temperature=0.7
@@ -579,7 +591,7 @@ class AIGuidanceSystem:
             ]
             
             completion = self.client.chat.completions.create(
-                model="nvidia/nemotron-nano-9b-v2:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=messages,
                 max_tokens=self.max_tokens,
                 temperature=0.7
@@ -727,7 +739,7 @@ class MultiDisasterModelTrainer:
             """
             
             completion = ai_client.chat.completions.create(
-                model="nvidia/nemotron-nano-9b-v2:free", # Use a powerful model for this
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[
                     {"role": "system", "content": "You are a data science expert specializing in Indian climate and geology. You only output valid JSON."},
                     {"role": "user", "content": prompt}
@@ -1053,7 +1065,7 @@ class EnhancedTravelRiskPredictor(TravelRiskPredictor):
             )
 
             response = self.ai_client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3.1:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[
                     {"role": "system", "content": "You are a disaster risk analysis expert. Analyze what-if scenarios and provide structured responses in JSON format."},
                     {"role": "user", "content": analysis_prompt}
@@ -1129,7 +1141,7 @@ class EnhancedTravelRiskPredictor(TravelRiskPredictor):
             
             # Get AI analysis
             response = self.ai_client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3.1:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[
                     {"role": "system", "content": "You are a disaster risk analysis expert. Analyze what-if scenarios and provide structured responses in JSON format."},
                     {"role": "user", "content": analysis_prompt}
@@ -1242,7 +1254,7 @@ class EnhancedTravelRiskPredictor(TravelRiskPredictor):
             """
             
             impact_response = self.ai_client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3.1:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[{"role": "user", "content": impact_prompt}],
                 temperature=0.7,
                 max_tokens=1000
@@ -1363,7 +1375,7 @@ class EnhancedTravelRiskPredictor(TravelRiskPredictor):
             
             # Get AI analysis
             response = self.ai_client.chat.completions.create(
-                model="deepseek/deepseek-chat-v3.1:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 max_tokens=1000
@@ -1420,7 +1432,7 @@ class EnhancedTravelRiskPredictor(TravelRiskPredictor):
             Respond ONLY with the JSON object.
             """
             completion = self.chatbot.client.chat.completions.create(
-                model="mistralai/mistral-7b-instruct:free",
+                model=os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1"),
                 messages=[{"role": "user", "content": extraction_prompt}],
                 response_format={"type": "json_object"},
             )

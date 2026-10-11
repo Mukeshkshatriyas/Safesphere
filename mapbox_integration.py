@@ -3,10 +3,12 @@ import requests
 from typing import List, Dict, Tuple, Optional
 import json
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from the project root regardless of the current working directory
+PROJECT_ROOT = Path(__file__).resolve().parent
+load_dotenv(PROJECT_ROOT / ".env")
 
 class MapboxAPI:
     def __init__(self):

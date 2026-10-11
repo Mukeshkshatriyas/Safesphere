@@ -98,9 +98,24 @@ MAPBOX_ACCESS_TOKEN=your-mapbox-token
 WEATHER_API_KEY=your-weather-api-key
 FLASK_DEBUG=True
 FLASK_PORT=5000
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+TELEGRAM_ALERT_COOLDOWN_SECONDS=300
 ```
 
 These values are optional for local dashboard startup but are required for some weather, mapping, and routing features.
+
+### Telegram high-risk alerts
+
+Copy `.env.example` to `.env` in the project root and set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`. Create a bot by messaging `@BotFather` with `/newbot`, then open that bot and send `/start`. To find your chat ID, message `@userinfobot` or call `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates` after sending `/start` and read `message.chat.id` from the response. Keep `.env` private; it is ignored by Git.
+
+The active `POST /api/predict-disaster` endpoint sends a Telegram alert only when the selected prediction's `risk_level` is `High`. The default cooldown is five minutes per disaster and can be changed with `TELEGRAM_ALERT_COOLDOWN_SECONDS`; set it to `0` to disable the cooldown. Notification failures do not fail the prediction response, and `telegram_alert_sent` reports whether the message was sent.
+
+To verify Telegram without waiting for a high-risk prediction, configure `.env`, start the virtual environment, and run this from the project root:
+
+```powershell
+python -c "from telegram_service import send_telegram_test_alert; print('sent' if send_telegram_test_alert() else 'not sent')"
+```
 
 ## Project structure
 
