@@ -33,7 +33,7 @@ The root app redirects users to the dashboard while the API remains available at
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/karansingh7773-rathore/Pre-Disaster-Predictor-Trained-on-ML-algorithms-Powered-by-AI
+git clone https://github.com/Mukeshkshatriyas/Safesphere.git
 cd Pre-Disaster-Predictor-Trained-on-ML-algorithms-Powered-by-AI
 ```
 
