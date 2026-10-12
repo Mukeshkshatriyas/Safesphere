@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 # Load environment variables from the project root regardless of the current working directory
 PROJECT_ROOT = Path(__file__).resolve().parent
 load_dotenv(PROJECT_ROOT / ".env")
-from telegram_service import send_telegram_alert
+from telegram_service import send_telegram_alert, send_telegram_alert_by_risk, reverse_geocode
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
@@ -149,9 +149,30 @@ def predict_disaster():
     if disaster not in predictor.disaster_models:
         return jsonify({'error': f'The {disaster} prediction model is unavailable.'}), 503
 
+    # Build a lookup that maps common aliases to the exact feature names the model was trained on
+    _feature_aliases = {
+        f.lower().replace('\uff70', '').replace('%', '').replace('_', ''): f
+        for f in predictor.numerical_features
+    }
+
+    def _resolve_feature(name):
+        """Return the model's exact feature name for a given input key."""
+        if name in predictor.numerical_features:
+            return name
+        key = name.lower().replace('\uff70', '').replace('%', '').replace('_', '')
+        return _feature_aliases.get(key, name)
+
     model_inputs = {}
     for feature in predictor.numerical_features:
-        raw_value = inputs.get(feature, predictor._get_default_value(feature))
+        # Try the exact name first, then any alias the caller may have used
+        raw_value = inputs.get(feature)
+        if raw_value is None:
+            for k, v in inputs.items():
+                if _resolve_feature(k) == feature:
+                    raw_value = v
+                    break
+        if raw_value is None:
+            raw_value = predictor._get_default_value(feature)
         try:
             value = float(raw_value)
         except (TypeError, ValueError):
@@ -177,25 +198,28 @@ def predict_disaster():
         return jsonify({'error': 'The prediction model could not assess these inputs.'}), 503
 
     prediction = predictions[disaster]
+    risk_level = str(prediction.get('risk_level', '')).strip()
     telegram_alert_sent = False
-    if str(prediction.get('risk_level', '')).upper() == 'HIGH':
-        app.logger.warning('HIGH RISK detected for %s', disaster)
+    if risk_level.lower() in ('high', 'medium', 'low'):
+        app.logger.info('%s risk detected for %s', risk_level.upper(), disaster)
         probability = prediction.get('probability')
         confidence = float(probability) * 100 if probability is not None else 0.0
-        alert_message = (
-            '🚨 HIGH-RISK ALERT 🚨\n\n'
-            '⚠️ High-risk condition detected by the AI system.\n\n'
-            f'Prediction: {disaster.capitalize()}\n'
-            'Risk Level: HIGH\n'
-            f'Confidence: {confidence:.1f}%\n'
-            f'Time: {time.strftime("%Y-%m-%d %H:%M:%S %Z")}\n\n'
-            'Recommended Action:\n'
-            'Follow local emergency guidance and move to a safe area.\n\n'
-            'Please check the system immediately.'
-        )
-        telegram_alert_sent = send_telegram_alert(
-            alert_message,
-            condition_key=f'{disaster}:{prediction.get("risk", "high")}',
+        # Resolve current location: prefer explicit city, then reverse-geocode lat/lon
+        city = payload.get('city') or payload.get('location') or ''
+        lat = payload.get('lat') or model_inputs.get('Latitude')
+        lon = payload.get('lon') or model_inputs.get('Longitude')
+        if city:
+            location = city
+        elif lat is not None and lon is not None:
+            location = reverse_geocode(float(lat), float(lon))
+        else:
+            location = 'Unknown'
+        telegram_alert_sent = send_telegram_alert_by_risk(
+            disaster,
+            risk_level,
+            confidence,
+            time.strftime('%Y-%m-%d %H:%M:%S %Z'),
+            location=location,
         )
 
     return jsonify({
