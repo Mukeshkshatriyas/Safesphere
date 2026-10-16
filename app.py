@@ -1,5 +1,6 @@
 #app.py
 from flask import Flask, request, jsonify, redirect, send_from_directory
+from flask_cors import CORS
 from server import EnhancedTravelRiskPredictor, EnhancedDataFetcher, DisasterChatbot
 from mapbox_integration import MapboxAPI
 from anomaly_detector import AnomalyDetector
@@ -17,6 +18,7 @@ from telegram_service import send_telegram_alert, send_telegram_alert_by_risk, r
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
+CORS(app)
 
 predictor = EnhancedTravelRiskPredictor()
 data_fetcher = EnhancedDataFetcher()

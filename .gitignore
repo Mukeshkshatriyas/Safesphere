@@ -15,8 +15,8 @@ __pycache__/
 # IDE
 .vscode/
 
-# ML generated files
-*.pkl
+# ML generated files (keep .pkl models - required for deployment)
+# *.pkl
 *.joblib
 *.h5
 *.keras
